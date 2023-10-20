@@ -28,7 +28,6 @@ function App({ setTarefaConcluida }) {
     if (event.target.checked) {
       setItemConcluido([...itemConcluido, item]);
       setTarefasConcluidas([...tarefasConcluidas, item]);
-      // Remove o item da lista original quando marcado como concluído
       const tmpArray = [...lista];
       tmpArray.splice(lista.indexOf(item), 1);
       setLista(tmpArray);
