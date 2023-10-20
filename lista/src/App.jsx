@@ -1,34 +1,68 @@
-import React, { useState } from 'react';
-import TaskApp from './components/TaskApp';
-import TaskList from './components/TaskList';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
-export default function App() {
-  const [pages, setPages] = useState(0);
+function App({ setTarefaConcluida }) {
+  const [lista, setLista] = useState([]);
+  const [novoItem, setNovoItem] = useState("");
+  const [itemConcluido, setItemConcluido] = useState([]);
+  const [tarefasConcluidas, setTarefasConcluidas] = useState([]);
 
-  const LinkPages = (p) => {
-    setPages(p);
+  useEffect(() => {
+    setLista(["Tarefa1", "Tarefa2", "Tarefa3", "Tarefa4"]);
+  }, []);
+
+  function adicionarNovoItem() {
+    if (novoItem.trim() !== "") {
+      setLista([...lista, novoItem]);
+      setNovoItem("");
+    }
   }
 
-  const retornarPagina = () => {
-    if (pages === 1) {
-      return <TaskList />;
-    } else if (pages === 2) {
-      return <TaskApp />;
+  function deletarItem(index) {
+    const tmpArray = [...lista];
+    tmpArray.splice(index, 1);
+    setLista(tmpArray);
+  }
+
+  function listaConcluidos(event, item) {
+    if (event.target.checked) {
+      setItemConcluido([...itemConcluido, item]);
+      setTarefasConcluidas([...tarefasConcluidas, item]);
+      // Remove o item da lista original quando marcado como concluído
+      const tmpArray = [...lista];
+      tmpArray.splice(lista.indexOf(item), 1);
+      setLista(tmpArray);
     } else {
-      return (
-        <div>
-          <button onClick={() => LinkPages(1)}>Tarefas a Fazer</button>
-          <button onClick={() => LinkPages(2)}>Tarefas Concluídas</button>
-        </div>
-      );
+      setItemConcluido(itemConcluido.filter((concluido) => concluido !== item));
+      setTarefasConcluidas(tarefasConcluidas.filter((concluido) => concluido !== item));
     }
   }
 
   return (
     <>
-      {retornarPagina()}
-      
+    <h2>Tarefas a Fazer:</h2>
+      <input value={novoItem} onChange={(event) => setNovoItem(event.target.value)} type="text" />
+      <button onClick={adicionarNovoItem}>Adicionar</button>
+      <ul>
+        {lista.map((item, index) => (
+          <li key={index}>
+            <input
+              type="checkbox"
+              onChange={(event) => listaConcluidos(event, item)}
+            />
+            {item}
+            <button onClick={() => deletarItem(index)}>Deletar</button>
+          </li>
+        ))}
+      </ul>
+      <h2>Tarefas Concluídas:</h2>
+      <ul>
+        {tarefasConcluidas.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </>
   );
 }
+
+export default App;
