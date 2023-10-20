@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import './lista.css';
-import App from '../App';
-import ListaDeTarefas from './ListaDeTarefas'
 
 function TaskList({ setTarefaConcluida }) {
   const [lista, setLista] = useState([]);
   const [novoItem, setNovoItem] = useState("");
   const [itemConcluido, setItemConcluido] = useState([]);
-  /* const [pages, setPages] = useState(0); */
 
   useEffect(() => {
     setLista(["Tarefa1", "Tarefa2", "Tarefa3", "Tarefa4"]);
   }, []);
 
   function adicionarNovoItem() {
-    setLista([...lista, novoItem]);
+    if (novoItem.trim() !== "") { 
+      setLista([...lista, novoItem]);
+      setNovoItem(""); 
+    }
   }
 
   function deletarItem(index) {
@@ -25,11 +25,11 @@ function TaskList({ setTarefaConcluida }) {
 
   function listaConcluidos(event, item) {
     if (event.target.checked) {
-      console.log(itemConcluido);
       setItemConcluido([...itemConcluido, item]);
-      setTarefaConcluida([...itemConcluido, item])
+      setTarefaConcluida([...itemConcluido, item]);
     } else {
-      console.log("desativou");
+      setItemConcluido(itemConcluido.filter((concluido) => concluido !== item));
+      setTarefaConcluida(itemConcluido.filter((concluido) => concluido !== item));
     }
   }
 
@@ -42,9 +42,15 @@ function TaskList({ setTarefaConcluida }) {
       <button onClick={retornarPagina}>Voltar</button>
       <input value={novoItem} onChange={(event) => setNovoItem(event.target.value)} type="text" />
       <button onClick={adicionarNovoItem}>Adicionar</button>
-      <ListaDeTarefas
-        lista={lista}
-      />
+      <ul>
+        {lista.map((item, index) => (
+          <li key={index}>
+            <input type="checkbox" onChange={(event) => listaConcluidos(event, item)} />
+            {item}
+            <button onClick={() => deletarItem(index)}>Deletar</button>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
